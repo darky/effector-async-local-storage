@@ -11,9 +11,9 @@ export const diEffector =
     onCreateEffect: (effect: Effect<any, any, any>) => void;
     onCreateStore: (store: Store<any>) => void;
   }) =>
-  <T>(cb: (...args: unknown[]) => T) => {
-    return function (this: unknown, ...args: unknown[]): T {
-      type AlsStore = { effector: Map<typeof cb, T> };
+  <T extends (this: U, ...args: any) => any, U>(cb: T) => {
+    return function (this: U, ...args: Parameters<T>): ReturnType<T> {
+      type AlsStore = { effector: Map<typeof cb, ReturnType<T>> };
 
       const store = _als.getStore();
 

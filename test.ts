@@ -119,4 +119,18 @@ test("diEffector cache", () => {
   });
 });
 
+test("diEffector params typing", () => {
+  diInit(() => {
+    const diEff = diEffector({
+      onCreateEvent: () => {},
+      onCreateEffect: () => {},
+      onCreateStore: () => {},
+    });
+
+    const getStore = diEff((n: number) => createStore(n));
+
+    equal(getStore(1).getState(), 1);
+  });
+});
+
 test.run();
