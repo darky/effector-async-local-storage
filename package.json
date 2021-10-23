@@ -1,6 +1,6 @@
 {
   "name": "ts-fp-di-effector",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Effector bindings for ts-fp-di",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
