@@ -1,5 +1,5 @@
 import { clearNode, Effect, Event, is, Store } from "effector";
-import { _als } from "ts-fp-di";
+import { als } from "ts-fp-di";
 
 export const diEffector =
   ({
@@ -15,7 +15,7 @@ export const diEffector =
     return function (this: U, ...args: Parameters<T>): ReturnType<T> {
       type AlsStore = { effector: Map<typeof cb, ReturnType<T>> };
 
-      const store = _als.getStore();
+      const store = als.getStore();
 
       if (store == null) {
         throw new Error('DI container not registered! Consider, that you call "diInit" before');
@@ -45,7 +45,7 @@ export const diEffector =
   };
 
 export const diEffectorClean = () => {
-  const store = _als.getStore();
+  const store = als.getStore();
 
   if (store == null) {
     throw new Error('DI container not registered! Consider, that you call "diInit" before');

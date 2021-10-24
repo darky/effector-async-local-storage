@@ -34,7 +34,7 @@
   "license": "MIT",
   "dependencies": {
     "effector": "22.1.2",
-    "ts-fp-di": "0.5.3"
+    "ts-fp-di": "0.6.0"
   },
   "devDependencies": {
     "@types/node": "16.11.4",
