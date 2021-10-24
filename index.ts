@@ -7,11 +7,11 @@ export const diEffector =
     onCreateEffect,
     onCreateStore,
   }: {
-    onCreateEvent: (event: Event<any>) => void;
-    onCreateEffect: (effect: Effect<any, any, any>) => void;
-    onCreateStore: (store: Store<any>) => void;
+    onCreateEvent: (label: string, event: Event<any>) => void;
+    onCreateEffect: (label: string, effect: Effect<any, any, any>) => void;
+    onCreateStore: (label: string, store: Store<any>) => void;
   }) =>
-  <T extends (this: U, ...args: any) => any, U>(cb: T) => {
+  <T extends (this: U, ...args: any) => any, U>(label: string, cb: T) => {
     return function (this: U, ...args: Parameters<T>): ReturnType<T> {
       type AlsStore = { effector: Map<typeof cb, ReturnType<T>> };
 
@@ -29,11 +29,11 @@ export const diEffector =
       (store as unknown as AlsStore).effector.set(cb, unit);
 
       if (is.event(unit)) {
-        onCreateEvent(unit);
+        onCreateEvent(label, unit);
       } else if (is.effect(unit)) {
-        onCreateEffect(unit);
+        onCreateEffect(label, unit);
       } else if (is.store(unit)) {
-        onCreateStore(unit);
+        onCreateStore(label, unit);
       }
 
       return unit;
@@ -53,8 +53,8 @@ export const diEffectorClean = () => {
 export const diEffectorExpose = () => {
   const store = storeOrError();
 
-  return Array.from((store.effector as Map<unknown, Unit<any>>)?.values() ?? [])
-}
+  return Array.from((store.effector as Map<unknown, Unit<any>>)?.values() ?? []);
+};
 
 const storeOrError = () => {
   const store = als.getStore();

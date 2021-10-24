@@ -8,57 +8,66 @@ import { diEffector, diEffectorClean, diEffectorExpose } from "./index.js";
 test("diEffector onCreateEvent", () => {
   diInit(() => {
     let event!: Event<any>;
+    let label = "";
 
     const diEff = diEffector({
-      onCreateEvent: (ev) => {
+      onCreateEvent: (lbl, ev) => {
+        label = lbl;
         event = ev;
       },
       onCreateEffect: () => {},
       onCreateStore: () => {},
     });
 
-    const getEvent = diEff(() => createEvent());
+    const getEvent = diEff("event", () => createEvent());
     const ev = getEvent();
     equal(is.event(ev), true);
     equal(event, ev);
+    equal(label, "event");
   });
 });
 
 test("diEffector onCreateEffect", () => {
   diInit(() => {
     let effect!: Effect<any, any, any>;
+    let label = "";
 
     const diEff = diEffector({
       onCreateEvent: () => {},
-      onCreateEffect: (eff) => {
+      onCreateEffect: (lbl, eff) => {
+        label = lbl;
         effect = eff;
       },
       onCreateStore: () => {},
     });
 
-    const getEffect = diEff(() => createEffect());
+    const getEffect = diEff("effect", () => createEffect());
     const eff = getEffect();
     equal(is.effect(eff), true);
     equal(effect, eff);
+    equal(label, "effect");
   });
 });
 
 test("diEffector onCreateStore", () => {
   diInit(() => {
     let store!: Store<any>;
+    let label = "";
 
     const diEff = diEffector({
       onCreateEvent: () => {},
       onCreateEffect: () => {},
-      onCreateStore: (s) => {
+      onCreateStore: (lbl, s) => {
+        label = lbl;
         store = s;
       },
     });
 
-    const getStore = diEff(() => createStore(null));
+    const getStore = diEff("store", () => createStore(null));
     const s = getStore();
     equal(is.store(s), true);
     equal(store, s);
+    equal(label, "store");
   });
 });
 
@@ -70,8 +79,8 @@ test("diEffectorClean", () => {
       onCreateStore: () => {},
     });
 
-    const event = diEff(() => createEvent())();
-    const store = diEff(() => createStore(0).on(event, (n) => n + 1))();
+    const event = diEff("event", () => createEvent())();
+    const store = diEff("store", () => createStore(0).on(event, (n) => n + 1))();
 
     event();
 
@@ -94,7 +103,7 @@ test("diEffector error without diInit", () => {
     onCreateStore: () => {},
   });
 
-  throws(() => diEff(() => createStore(null))());
+  throws(() => diEff("", () => createStore(null))());
 });
 
 test("diEffector cache", () => {
@@ -107,7 +116,7 @@ test("diEffector cache", () => {
   diInit(() => {
     let i = 0;
 
-    const getStore = diEff(() => {
+    const getStore = diEff("", () => {
       i++;
       return createStore(null);
     });
@@ -127,7 +136,7 @@ test("diEffector params typing", () => {
       onCreateStore: () => {},
     });
 
-    const getStore = diEff((n: number) => createStore(n));
+    const getStore = diEff("", (n: number) => createStore(n));
 
     equal(getStore(1).getState(), 1);
   });
@@ -141,7 +150,7 @@ test("diEffectorExpose simple", () => {
       onCreateStore: () => {},
     });
 
-    const $store = diEff(() => createStore(0))();
+    diEff("", () => createStore(0))();
 
     equal(is.store(diEffectorExpose()?.[0]), true);
   });
