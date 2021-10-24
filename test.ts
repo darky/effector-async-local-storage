@@ -3,7 +3,7 @@ import { diInit } from "ts-fp-di";
 import { test } from "uvu";
 import { equal, throws } from "uvu/assert";
 
-import { diEffector, diEffectorClean } from "./index.js";
+import { diEffector, diEffectorClean, diEffectorExpose } from "./index.js";
 
 test("diEffector onCreateEvent", () => {
   diInit(() => {
@@ -131,6 +131,24 @@ test("diEffector params typing", () => {
 
     equal(getStore(1).getState(), 1);
   });
+});
+
+test("diEffectorExpose simple", () => {
+  diInit(() => {
+    const diEff = diEffector({
+      onCreateEvent: () => {},
+      onCreateEffect: () => {},
+      onCreateStore: () => {},
+    });
+
+    const $store = diEff(() => createStore(0))();
+
+    equal(is.store(diEffectorExpose()?.[0]), true);
+  });
+});
+
+test("diEffectorExpose error without diInit", () => {
+  throws(() => diEffectorExpose());
 });
 
 test.run();
