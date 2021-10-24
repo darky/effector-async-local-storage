@@ -1,5 +1,5 @@
 # ts-fp-di-effector
-[Effector](https://effector.dev/) bindings for [ts-fp-di](https://github.com/darky/ts-fp-di)
+[Effector](https://effector.dev/) Domain based on [ts-fp-di](https://github.com/darky/ts-fp-di)
 
 ## Get started
 
@@ -24,7 +24,7 @@ diInit(() => { // <- on each lifecycle (HTTP request, MQ message, e.t.c.) need i
   });
 
   // Feel free to wrap any created Events, Effects or Stores by `diEff` factory
-  // It will guarantee, that created Events, Effects or Stores will be Singleton for out DI scope
+  // It will guarantee, that created Events, Effects or Stores will be Singleton for our DI scope
 
   // Some examples
   const incEventFactory = diEff(() => createEvent()); // <- Event factory, which will create Singleton Event instance for our DI scope

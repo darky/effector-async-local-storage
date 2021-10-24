@@ -1,7 +1,7 @@
 {
   "name": "ts-fp-di-effector",
   "version": "0.1.0",
-  "description": "Effector bindings for ts-fp-di",
+  "description": "Effector Domain based on ts-fp-di",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "repository": {
@@ -18,7 +18,8 @@
     "ts",
     "effector",
     "ts-fp-di",
-    "bindings"
+    "bindings",
+    "domain"
   ],
   "scripts": {
     "clean": "rimraf dist",
