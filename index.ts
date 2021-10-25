@@ -26,6 +26,7 @@ export const diEffector =
       }
 
       const unit = cb.apply(this, args);
+      unit.sid = label;
       (store as unknown as AlsStore).effector.set(cb, unit);
 
       if (is.event(unit)) {

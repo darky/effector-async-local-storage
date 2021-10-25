@@ -23,6 +23,7 @@ test("diEffector onCreateEvent", () => {
     const ev = getEvent();
     equal(is.event(ev), true);
     equal(event, ev);
+    equal(event.sid, "event");
     equal(label, "event");
   });
 });
@@ -45,6 +46,7 @@ test("diEffector onCreateEffect", () => {
     const eff = getEffect();
     equal(is.effect(eff), true);
     equal(effect, eff);
+    equal(effect.sid, "effect");
     equal(label, "effect");
   });
 });
@@ -67,6 +69,7 @@ test("diEffector onCreateStore", () => {
     const s = getStore();
     equal(is.store(s), true);
     equal(store, s);
+    equal(store.sid, "store");
     equal(label, "store");
   });
 });
