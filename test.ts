@@ -3,7 +3,7 @@ import { diInit } from "ts-fp-di";
 import { test } from "uvu";
 import { equal, throws } from "uvu/assert";
 
-import { diEffector, diEffectorClean, diEffectorExpose } from "./index.js";
+import { diEffector } from "./index.js";
 
 test("diEffector onCreateEvent", () => {
   diInit(() => {
@@ -74,31 +74,6 @@ test("diEffector onCreateStore", () => {
   });
 });
 
-test("diEffectorClean", () => {
-  diInit(() => {
-    const diEff = diEffector({
-      onCreateEvent: () => {},
-      onCreateEffect: () => {},
-      onCreateStore: () => {},
-    });
-
-    const event = diEff("event", () => createEvent())();
-    const store = diEff("store", () => createStore(0).on(event, (n) => n + 1))();
-
-    event();
-
-    diEffectorClean();
-
-    event();
-
-    equal(store.getState(), 1);
-  });
-});
-
-test("diEffectorClean error without diInit", () => {
-  throws(() => diEffectorClean());
-});
-
 test("diEffector error without diInit", () => {
   const diEff = diEffector({
     onCreateEvent: () => {},
@@ -143,24 +118,6 @@ test("diEffector params typing", () => {
 
     equal(getStore(1).getState(), 1);
   });
-});
-
-test("diEffectorExpose simple", () => {
-  diInit(() => {
-    const diEff = diEffector({
-      onCreateEvent: () => {},
-      onCreateEffect: () => {},
-      onCreateStore: () => {},
-    });
-
-    diEff("", () => createStore(0))();
-
-    equal(is.store(diEffectorExpose()?.[0]), true);
-  });
-});
-
-test("diEffectorExpose error without diInit", () => {
-  throws(() => diEffectorExpose());
 });
 
 test.run();

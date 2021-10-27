@@ -1,4 +1,4 @@
-import { clearNode, Effect, Event, is, Store, Unit } from "effector";
+import { Effect, Event, is, Store } from "effector";
 import { als } from "ts-fp-di";
 
 export const diEffector =
@@ -40,22 +40,6 @@ export const diEffector =
       return unit;
     };
   };
-
-export const diEffectorClean = () => {
-  const store = storeOrError();
-
-  (store.effector as Map<unknown, unknown> | void)?.forEach((u) => {
-    if (is.unit(u)) {
-      clearNode(u, { deep: true });
-    }
-  });
-};
-
-export const diEffectorExpose = () => {
-  const store = storeOrError();
-
-  return Array.from((store.effector as Map<unknown, Unit<any>>)?.values() ?? []);
-};
 
 const storeOrError = () => {
   const store = als.getStore();

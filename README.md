@@ -34,11 +34,5 @@ diInit(() => {
   const incEventFactory = diEff("incEvent", () => createEvent());
   // Store factory, which will create Singleton Store instance for our DI scope
   const incStoreFactory = diEff("incStore", () => createStore(0).on(incEventFactory(), (n) => n + 1));
-
-  // Get all registered Events, Effects and Stores from DI container. Useful for debugging
-  diEffectorExpose();
-
-  // Cleanup. Need call at the end (before HTTP response, before ack MQ message, e.t.c.)
-  diEffectorClean();
 });
 ```
