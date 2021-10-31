@@ -30,30 +30,30 @@ test('diEffector onCreateEvent', () => {
 
 test('diEffector onCreateEffect', () => {
   diInit(() => {
-    let effect!: Effect<any, any, any>;
+    let effectFx!: Effect<any, any, any>;
     let label = '';
 
     const diEff = diEffector({
       onCreateEvent: () => {},
       onCreateEffect: (lbl, eff) => {
         label = lbl;
-        effect = eff;
+        effectFx = eff;
       },
       onCreateStore: () => {},
     });
 
     const getEffect = diEff('effect', () => createEffect());
-    const eff = getEffect();
-    equal(is.effect(eff), true);
-    equal(effect, eff);
-    equal(effect.sid, 'effect');
+    const effFx = getEffect();
+    equal(is.effect(effFx), true);
+    equal(effectFx, effFx);
+    equal(effectFx.sid, 'effect');
     equal(label, 'effect');
   });
 });
 
 test('diEffector onCreateStore', () => {
   diInit(() => {
-    let store!: Store<any>;
+    let $store!: Store<any>;
     let label = '';
 
     const diEff = diEffector({
@@ -61,15 +61,15 @@ test('diEffector onCreateStore', () => {
       onCreateEffect: () => {},
       onCreateStore: (lbl, s) => {
         label = lbl;
-        store = s;
+        $store = s;
       },
     });
 
     const getStore = diEff('store', () => createStore(null));
-    const s = getStore();
-    equal(is.store(s), true);
-    equal(store, s);
-    equal(store.sid, 'store');
+    const $s = getStore();
+    equal(is.store($s), true);
+    equal($store, $s);
+    equal($store.sid, 'store');
     equal(label, 'store');
   });
 });
@@ -99,9 +99,9 @@ test('diEffector cache', () => {
       return createStore(null);
     });
 
-    const store1 = getStore();
-    const store2 = getStore();
-    equal(store1, store2);
+    const $store1 = getStore();
+    const $store2 = getStore();
+    equal($store1, $store2);
     equal(i, 1);
   });
 });
