@@ -1,14 +1,14 @@
-import { createEffect, createEvent, createStore, Effect, Event, is, Store } from "effector";
-import { diInit } from "ts-fp-di";
-import { test } from "uvu";
-import { equal, throws } from "uvu/assert";
+import { createEffect, createEvent, createStore, Effect, Event, is, Store } from 'effector';
+import { diInit } from 'ts-fp-di';
+import { test } from 'uvu';
+import { equal, throws } from 'uvu/assert';
 
-import { diEffector } from "./index.js";
+import { diEffector } from './index.js';
 
-test("diEffector onCreateEvent", () => {
+test('diEffector onCreateEvent', () => {
   diInit(() => {
     let event!: Event<any>;
-    let label = "";
+    let label = '';
 
     const diEff = diEffector({
       onCreateEvent: (lbl, ev) => {
@@ -19,19 +19,19 @@ test("diEffector onCreateEvent", () => {
       onCreateStore: () => {},
     });
 
-    const getEvent = diEff("event", () => createEvent());
+    const getEvent = diEff('event', () => createEvent());
     const ev = getEvent();
     equal(is.event(ev), true);
     equal(event, ev);
-    equal(event.sid, "event");
-    equal(label, "event");
+    equal(event.sid, 'event');
+    equal(label, 'event');
   });
 });
 
-test("diEffector onCreateEffect", () => {
+test('diEffector onCreateEffect', () => {
   diInit(() => {
     let effect!: Effect<any, any, any>;
-    let label = "";
+    let label = '';
 
     const diEff = diEffector({
       onCreateEvent: () => {},
@@ -42,19 +42,19 @@ test("diEffector onCreateEffect", () => {
       onCreateStore: () => {},
     });
 
-    const getEffect = diEff("effect", () => createEffect());
+    const getEffect = diEff('effect', () => createEffect());
     const eff = getEffect();
     equal(is.effect(eff), true);
     equal(effect, eff);
-    equal(effect.sid, "effect");
-    equal(label, "effect");
+    equal(effect.sid, 'effect');
+    equal(label, 'effect');
   });
 });
 
-test("diEffector onCreateStore", () => {
+test('diEffector onCreateStore', () => {
   diInit(() => {
     let store!: Store<any>;
-    let label = "";
+    let label = '';
 
     const diEff = diEffector({
       onCreateEvent: () => {},
@@ -65,26 +65,26 @@ test("diEffector onCreateStore", () => {
       },
     });
 
-    const getStore = diEff("store", () => createStore(null));
+    const getStore = diEff('store', () => createStore(null));
     const s = getStore();
     equal(is.store(s), true);
     equal(store, s);
-    equal(store.sid, "store");
-    equal(label, "store");
+    equal(store.sid, 'store');
+    equal(label, 'store');
   });
 });
 
-test("diEffector error without diInit", () => {
+test('diEffector error without diInit', () => {
   const diEff = diEffector({
     onCreateEvent: () => {},
     onCreateEffect: () => {},
     onCreateStore: () => {},
   });
 
-  throws(() => diEff("", () => createStore(null))());
+  throws(() => diEff('', () => createStore(null))());
 });
 
-test("diEffector cache", () => {
+test('diEffector cache', () => {
   const diEff = diEffector({
     onCreateEvent: () => {},
     onCreateEffect: () => {},
@@ -94,7 +94,7 @@ test("diEffector cache", () => {
   diInit(() => {
     let i = 0;
 
-    const getStore = diEff("", () => {
+    const getStore = diEff('', () => {
       i++;
       return createStore(null);
     });
@@ -106,7 +106,7 @@ test("diEffector cache", () => {
   });
 });
 
-test("diEffector params typing", () => {
+test('diEffector params typing', () => {
   diInit(() => {
     const diEff = diEffector({
       onCreateEvent: () => {},
@@ -114,7 +114,7 @@ test("diEffector params typing", () => {
       onCreateStore: () => {},
     });
 
-    const getStore = diEff("", (n: number) => createStore(n));
+    const getStore = diEff('', (n: number) => createStore(n));
 
     equal(getStore(1).getState(), 1);
   });

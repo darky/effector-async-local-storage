@@ -1,5 +1,5 @@
-import { Effect, Event, is, Store } from "effector";
-import { als } from "ts-fp-di";
+import { Effect, Event, is, Store } from 'effector';
+import { als } from 'ts-fp-di';
 
 export const diEffector =
   ({
