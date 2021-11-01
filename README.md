@@ -7,12 +7,12 @@
 ```typescript
 import { attach, createEffect, createEvent, createStore } from 'effector';
 import { diDep, diInit, diSet } from 'ts-fp-di';
-import { diEffector } from 'effector-async-local-storage';
+import { effectorAsyncLocalStorage } from 'effector-async-local-storage';
 import Koa from 'koa';
 import Router from 'koa-router';
 import Redis from 'ioredis';
 
-const diEff = diEffector({
+const eff = effectorAsyncLocalStorage({
   onCreateEffect(sid, effect) {
     effect.watch((val) => {
       console.log(`Effect "${sid}" call with value: ${val}`);
@@ -37,11 +37,11 @@ const diEff = diEffector({
   },
 });
 
-const increment = diEff('increment', () => createEvent());
-const decrement = diEff('decrement', () => createEvent());
-const reset = diEff('reset', () => createEvent());
+const increment = eff('increment', () => createEvent());
+const decrement = eff('decrement', () => createEvent());
+const reset = eff('reset', () => createEvent());
 
-const pullCounterFx = diEff('pullCounterFx', () =>
+const pullCounterFx = eff('pullCounterFx', () =>
   createEffect<void, number>(async () => {
     const login = diDep('login');
     const count = await redis.get(`${login}:counter`);
@@ -49,7 +49,7 @@ const pullCounterFx = diEff('pullCounterFx', () =>
   })
 );
 
-const pushCounterFx = diEff('pushCounterFx', () =>
+const pushCounterFx = eff('pushCounterFx', () =>
   attach({
     source: $counter(),
     effect: createEffect<number, number>(async (count) => {
@@ -60,7 +60,7 @@ const pushCounterFx = diEff('pushCounterFx', () =>
   })
 );
 
-const $counter = diEff(
+const $counter = eff(
   '$counter',
   () =>
     createStore(0)
