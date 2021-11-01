@@ -1,5 +1,7 @@
-import { Effect, Event, is, Store } from 'effector';
+import { Effect, Event, is, Store, Unit } from 'effector';
 import { als } from 'ts-fp-di';
+
+const depsMap = new Map<() => Unit<any>, (() => Unit<any>)[]>();
 
 export const diEffector =
   ({
@@ -11,8 +13,12 @@ export const diEffector =
     onCreateEffect: (label: string, effect: Effect<any, any, any>) => void;
     onCreateStore: (label: string, store: Store<any>) => void;
   }) =>
-  <T extends (this: U, ...args: any) => any, U>(label: string, cb: T) => {
-    return function (this: U, ...args: Parameters<T>): ReturnType<T> {
+  <T extends (this: U, ...args: any) => any, U>(
+    label: string,
+    cb: T,
+    autoInitDeps: (...args: any) => (() => Unit<any>)[] = () => []
+  ) => {
+    const resp = function (this: U, ...args: Parameters<T>): ReturnType<T> {
       type AlsStore = { effector: Map<typeof cb, ReturnType<T>> };
 
       const store = storeOrError();
@@ -29,6 +35,8 @@ export const diEffector =
       unit.sid = label;
       (store as unknown as AlsStore).effector.set(cb, unit);
 
+      (depsMap.get(resp) ?? []).forEach((dep) => dep());
+
       if (is.event(unit)) {
         onCreateEvent(label, unit);
       } else if (is.effect(unit)) {
@@ -39,6 +47,13 @@ export const diEffector =
 
       return unit;
     };
+
+    autoInitDeps().forEach((unitFactory) => {
+      const deps = depsMap.get(unitFactory) ?? [];
+      depsMap.set(unitFactory, deps.concat(resp));
+    });
+
+    return resp;
   };
 
 const storeOrError = () => {

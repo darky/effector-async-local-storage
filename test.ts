@@ -120,4 +120,24 @@ test('diEffector params typing', () => {
   });
 });
 
+test('Auto init relations', () => {
+  diInit(() => {
+    const diEff = diEffector({
+      onCreateEvent: () => {},
+      onCreateEffect: () => {},
+      onCreateStore: () => {},
+    });
+
+    const event = diEff('', () => createEvent());
+    const $store = diEff(
+      '',
+      () => createStore(0).on(event(), (n) => n + 1),
+      () => [event]
+    );
+
+    event()();
+    equal($store().getState(), 1);
+  });
+});
+
 test.run();
