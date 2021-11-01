@@ -3,7 +3,7 @@ import { als } from 'ts-fp-di';
 
 const depsMap = new Map<() => Unit<any>, (() => Unit<any>)[]>();
 
-export const diEffector =
+export const effectorAsyncLocalStorage =
   ({
     onCreateEvent,
     onCreateEffect,
