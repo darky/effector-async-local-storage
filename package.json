@@ -1,7 +1,7 @@
 {
   "name": "ts-fp-di-effector",
   "version": "0.4.0",
-  "description": "Effector Domain based on ts-fp-di",
+  "description": "Effector Domain based on AsyncLocalStorage",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "repository": {
@@ -18,8 +18,11 @@
     "ts",
     "effector",
     "ts-fp-di",
-    "bindings",
-    "domain"
+    "domain",
+    "async",
+    "local",
+    "storage",
+    "asynclocalstorage"
   ],
   "scripts": {
     "clean": "rimraf dist",
