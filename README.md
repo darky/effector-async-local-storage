@@ -1,19 +1,13 @@
-# ts-fp-di-effector
+# effector-async-local-storage
 
-[Effector](https://effector.dev/) Domain based on [ts-fp-di](https://github.com/darky/ts-fp-di)
-
-## Get started
-
-Please read first about [ts-fp-di](https://github.com/darky/ts-fp-di)
-
-**ts-fp-di-effector** is alternative for **Effector** _Domain_, but based on Node.js AsyncLocalStorage
+[Effector](https://effector.dev/) Domain based on Node.js AsyncLocalStorage
 
 ## Example
 
 ```typescript
 import { attach, createEffect, createEvent, createStore } from 'effector';
 import { diDep, diInit, diSet } from 'ts-fp-di';
-import { diEffector } from 'ts-fp-di-effector';
+import { diEffector } from 'effector-async-local-storage';
 import Koa from 'koa';
 import Router from 'koa-router';
 import Redis from 'ioredis';
