@@ -10,29 +10,103 @@ Please read first about [ts-fp-di](https://github.com/darky/ts-fp-di)
 
 ## Example
 
-```ts
-// On each lifecycle (HTTP request, MQ message, e.t.c.) need init DI container. More info on ts-fp-di doc
-diInit(() => {
-  const diEff = diEffector({
-    onCreateEvent: (label, event) => {
-      // catch created event here and it label. Good for logging purpose.
-    },
-    onCreateEffect: (label, effect) => {
-      // catch created effect here and it label. Good for logging purpose.
-    },
-    onCreateStore: (label, store) => {
-      // catch created store here and it label. Good for logging purpose.
-    },
-  });
+```typescript
+import { attach, createEffect, createEvent, createStore } from 'effector';
+import { diDep, diInit, diSet } from 'ts-fp-di';
+import { diEffector } from 'ts-fp-di-effector';
+import Koa from 'koa';
+import Router from 'koa-router';
+import Redis from 'ioredis';
 
-  // Feel free to wrap any created Events, Effects or Stores by `diEff` factory
-  // It will guarantee, that created Events, Effects or Stores will be Singleton for our DI scope
-
-  // Some examples
-
-  // Event factory, which will create Singleton Event instance for our DI scope
-  const incEventFactory = diEff("incEvent", () => createEvent());
-  // Store factory, which will create Singleton Store instance for our DI scope
-  const incStoreFactory = diEff("incStore", () => createStore(0).on(incEventFactory(), (n) => n + 1));
+const diEff = diEffector({
+  onCreateEffect(sid, effect) {
+    effect.watch((val) => {
+      console.log(`Effect "${sid}" call with value: ${val}`);
+    });
+    effect.doneData.watch((val) => {
+      console.log(`Effect "${sid}" done with value: ${val}`);
+    });
+    effect.failData.watch((val) => {
+      console.log(`Effect "${sid}" fail with value: ${val}`);
+    });
+  },
+  onCreateEvent(sid, event) {
+    event.watch((val) => {
+      console.log(`Event "${sid}" call with value: ${val}`);
+    });
+  },
+  onCreateStore(sid, store) {
+    store.watch((state, val) => {
+      console.log(`Store "${sid}" mutation with value: ${val}`);
+      console.log(`Store "${sid}" mutation, current state: ${state}`);
+    });
+  },
 });
+
+const increment = diEff('increment', () => createEvent());
+const decrement = diEff('decrement', () => createEvent());
+const reset = diEff('reset', () => createEvent());
+
+const pullCounterFx = diEff('pullCounterFx', () =>
+  createEffect<void, number>(async () => {
+    const login = diDep('login');
+    const count = await redis.get(`${login}:counter`);
+    return Number(count ?? 0);
+  })
+);
+
+const pushCounterFx = diEff('pushCounterFx', () =>
+  attach({
+    source: $counter(),
+    effect: createEffect<number, number>(async (count) => {
+      const login = diDep('login');
+      await redis.set(`${login}:counter`, count);
+      return count;
+    }),
+  })
+);
+
+const $counter = diEff('$counter', () =>
+  createStore(0)
+    .on(increment(), (state) => state + 1)
+    .on(decrement(), (state) => state - 1)
+    .on(pullCounterFx().doneData, (_, value) => value)
+    .reset(reset())
+);
+
+const app = new Koa();
+const router = new Router();
+const redis = new Redis();
+
+app.use(async (_, next) => {
+  await diInit(async () => {
+    diSet('login', 'xxx');
+    await next();
+  });
+});
+
+router.post('/increment', async (ctx) => {
+  $counter();
+  await pullCounterFx()();
+  increment()();
+  ctx.body = await pushCounterFx()();
+});
+
+router.post('/decrement', async (ctx) => {
+  $counter();
+  await pullCounterFx()();
+  decrement()();
+  ctx.body = await pushCounterFx()();
+});
+
+router.post('/reset', async (ctx) => {
+  $counter();
+  await pullCounterFx()();
+  reset()();
+  ctx.body = await pushCounterFx()();
+});
+
+app.use(router.routes());
+
+app.listen(4000);
 ```
