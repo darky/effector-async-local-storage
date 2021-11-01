@@ -66,12 +66,15 @@ const pushCounterFx = diEff('pushCounterFx', () =>
   })
 );
 
-const $counter = diEff('$counter', () =>
-  createStore(0)
-    .on(increment(), (state) => state + 1)
-    .on(decrement(), (state) => state - 1)
-    .on(pullCounterFx().doneData, (_, value) => value)
-    .reset(reset())
+const $counter = diEff(
+  '$counter',
+  () =>
+    createStore(0)
+      .on(increment(), (state) => state + 1)
+      .on(decrement(), (state) => state - 1)
+      .on(pullCounterFx().doneData, (_, value) => value)
+      .reset(reset()),
+  () => [pullCounterFx]
 );
 
 const app = new Koa();
@@ -86,21 +89,18 @@ app.use(async (_, next) => {
 });
 
 router.post('/increment', async (ctx) => {
-  $counter();
   await pullCounterFx()();
   increment()();
   ctx.body = await pushCounterFx()();
 });
 
 router.post('/decrement', async (ctx) => {
-  $counter();
   await pullCounterFx()();
   decrement()();
   ctx.body = await pushCounterFx()();
 });
 
 router.post('/reset', async (ctx) => {
-  $counter();
   await pullCounterFx()();
   reset()();
   ctx.body = await pushCounterFx()();
