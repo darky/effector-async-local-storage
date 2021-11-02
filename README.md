@@ -102,3 +102,7 @@ app.use(router.routes());
 
 app.listen(4000);
 ```
+
+## Related
+
+* [ts-fp-di](https://github.com/darky/ts-fp-di) - Tiny TypeScript functional dependency injection, based on Node.js AsyncLocalStorage
