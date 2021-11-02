@@ -1,5 +1,5 @@
 import { Effect, Event, is, Store } from 'effector';
-import { als } from 'ts-fp-di';
+import { als, diInit } from 'ts-fp-di';
 
 export const effectorAsyncLocalStorageFactory =
   ({
@@ -42,6 +42,8 @@ export const effectorAsyncLocalStorageFactory =
 
     return resp;
   };
+
+export const effectorAsyncLocalStorageInit = diInit;
 
 const storeOrError = () => {
   const store = als.getStore();

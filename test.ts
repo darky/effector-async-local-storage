@@ -1,12 +1,11 @@
 import { createEffect, createEvent, createStore, Effect, Event, is, Store } from 'effector';
-import { diInit } from 'ts-fp-di';
 import { test } from 'uvu';
 import { equal, throws } from 'uvu/assert';
 
-import { effectorAsyncLocalStorageFactory } from './index.js';
+import { effectorAsyncLocalStorageFactory, effectorAsyncLocalStorageInit } from './index.js';
 
 test('diEffector onCreateEvent', () => {
-  diInit(() => {
+  effectorAsyncLocalStorageInit(() => {
     let event!: Event<any>;
     let label = '';
 
@@ -29,7 +28,7 @@ test('diEffector onCreateEvent', () => {
 });
 
 test('diEffector onCreateEffect', () => {
-  diInit(() => {
+  effectorAsyncLocalStorageInit(() => {
     let effectFx!: Effect<any, any, any>;
     let label = '';
 
@@ -52,7 +51,7 @@ test('diEffector onCreateEffect', () => {
 });
 
 test('diEffector onCreateStore', () => {
-  diInit(() => {
+  effectorAsyncLocalStorageInit(() => {
     let $store!: Store<any>;
     let label = '';
 
@@ -91,7 +90,7 @@ test('diEffector cache', () => {
     onCreateStore: () => {},
   });
 
-  diInit(() => {
+  effectorAsyncLocalStorageInit(() => {
     let i = 0;
 
     const getStore = diEff('', () => {
@@ -107,7 +106,7 @@ test('diEffector cache', () => {
 });
 
 test('diEffector params typing', () => {
-  diInit(() => {
+  effectorAsyncLocalStorageInit(() => {
     const diEff = effectorAsyncLocalStorageFactory({
       onCreateEvent: () => {},
       onCreateEffect: () => {},
