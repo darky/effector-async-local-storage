@@ -1,9 +1,7 @@
-import { Effect, Event, is, Store, Unit } from 'effector';
+import { Effect, Event, is, Store } from 'effector';
 import { als } from 'ts-fp-di';
 
-const depsMap = new Map<() => Unit<any>, (() => Unit<any>)[]>();
-
-export const effectorAsyncLocalStorage =
+export const effectorAsyncLocalStorageFactory =
   ({
     onCreateEvent,
     onCreateEffect,
@@ -13,11 +11,7 @@ export const effectorAsyncLocalStorage =
     onCreateEffect: (label: string, effect: Effect<any, any, any>) => void;
     onCreateStore: (label: string, store: Store<any>) => void;
   }) =>
-  <T extends (this: U, ...args: any) => any, U>(
-    label: string,
-    cb: T,
-    autoInitDeps: (...args: any) => (() => Unit<any>)[] = () => []
-  ) => {
+  <T extends (this: U, ...args: any) => any, U>(label: string, cb: T) => {
     const resp = function (this: U, ...args: Parameters<T>): ReturnType<T> {
       type AlsStore = { effector: Map<typeof cb, ReturnType<T>> };
 
@@ -35,8 +29,6 @@ export const effectorAsyncLocalStorage =
       unit.sid = label;
       (store as unknown as AlsStore).effector.set(cb, unit);
 
-      (depsMap.get(resp) ?? []).forEach((dep) => dep());
-
       if (is.event(unit)) {
         onCreateEvent(label, unit);
       } else if (is.effect(unit)) {
@@ -47,11 +39,6 @@ export const effectorAsyncLocalStorage =
 
       return unit;
     };
-
-    autoInitDeps().forEach((unitFactory) => {
-      const deps = depsMap.get(unitFactory) ?? [];
-      depsMap.set(unitFactory, deps.concat(resp));
-    });
 
     return resp;
   };

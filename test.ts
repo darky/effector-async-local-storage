@@ -3,14 +3,14 @@ import { diInit } from 'ts-fp-di';
 import { test } from 'uvu';
 import { equal, throws } from 'uvu/assert';
 
-import { effectorAsyncLocalStorage } from './index.js';
+import { effectorAsyncLocalStorageFactory } from './index.js';
 
 test('diEffector onCreateEvent', () => {
   diInit(() => {
     let event!: Event<any>;
     let label = '';
 
-    const diEff = effectorAsyncLocalStorage({
+    const diEff = effectorAsyncLocalStorageFactory({
       onCreateEvent: (lbl, ev) => {
         label = lbl;
         event = ev;
@@ -33,7 +33,7 @@ test('diEffector onCreateEffect', () => {
     let effectFx!: Effect<any, any, any>;
     let label = '';
 
-    const diEff = effectorAsyncLocalStorage({
+    const diEff = effectorAsyncLocalStorageFactory({
       onCreateEvent: () => {},
       onCreateEffect: (lbl, eff) => {
         label = lbl;
@@ -56,7 +56,7 @@ test('diEffector onCreateStore', () => {
     let $store!: Store<any>;
     let label = '';
 
-    const diEff = effectorAsyncLocalStorage({
+    const diEff = effectorAsyncLocalStorageFactory({
       onCreateEvent: () => {},
       onCreateEffect: () => {},
       onCreateStore: (lbl, s) => {
@@ -75,7 +75,7 @@ test('diEffector onCreateStore', () => {
 });
 
 test('diEffector error without diInit', () => {
-  const diEff = effectorAsyncLocalStorage({
+  const diEff = effectorAsyncLocalStorageFactory({
     onCreateEvent: () => {},
     onCreateEffect: () => {},
     onCreateStore: () => {},
@@ -85,7 +85,7 @@ test('diEffector error without diInit', () => {
 });
 
 test('diEffector cache', () => {
-  const diEff = effectorAsyncLocalStorage({
+  const diEff = effectorAsyncLocalStorageFactory({
     onCreateEvent: () => {},
     onCreateEffect: () => {},
     onCreateStore: () => {},
@@ -108,7 +108,7 @@ test('diEffector cache', () => {
 
 test('diEffector params typing', () => {
   diInit(() => {
-    const diEff = effectorAsyncLocalStorage({
+    const diEff = effectorAsyncLocalStorageFactory({
       onCreateEvent: () => {},
       onCreateEffect: () => {},
       onCreateStore: () => {},
@@ -117,26 +117,6 @@ test('diEffector params typing', () => {
     const getStore = diEff('', (n: number) => createStore(n));
 
     equal(getStore(1).getState(), 1);
-  });
-});
-
-test('Auto init relations', () => {
-  diInit(() => {
-    const diEff = effectorAsyncLocalStorage({
-      onCreateEvent: () => {},
-      onCreateEffect: () => {},
-      onCreateStore: () => {},
-    });
-
-    const event = diEff('', () => createEvent());
-    const $store = diEff(
-      '',
-      () => createStore(0).on(event(), (n) => n + 1),
-      () => [event]
-    );
-
-    event()();
-    equal($store().getState(), 1);
   });
 });
 
