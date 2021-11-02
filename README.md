@@ -6,13 +6,12 @@
 
 ```typescript
 import { attach, createEffect, createEvent, createStore } from 'effector';
-import { diDep, diInit, diSet } from 'ts-fp-di';
-import { effectorAsyncLocalStorage } from 'effector-async-local-storage';
+import { effectorAsyncLocalStorageFactory, effectorAsyncLocalStorageInit } from 'effector-async-local-storage';
 import Koa from 'koa';
 import Router from 'koa-router';
 import Redis from 'ioredis';
 
-const eff = effectorAsyncLocalStorage({
+const eff = effectorAsyncLocalStorageFactory({
   onCreateEffect(sid, effect) {
     effect.watch((val) => {
       console.log(`Effect "${sid}" call with value: ${val}`);
@@ -43,8 +42,7 @@ const reset = eff('reset', () => createEvent());
 
 const pullCounterFx = eff('pullCounterFx', () =>
   createEffect<void, number>(async () => {
-    const login = diDep('login');
-    const count = await redis.get(`${login}:counter`);
+    const count = await redis.get('counter');
     return Number(count ?? 0);
   })
 );
@@ -53,8 +51,7 @@ const pushCounterFx = eff('pushCounterFx', () =>
   attach({
     source: $counter(),
     effect: createEffect<number, number>(async (count) => {
-      const login = diDep('login');
-      await redis.set(`${login}:counter`, count);
+      await redis.set('counter', count);
       return count;
     }),
   })
@@ -67,8 +64,7 @@ const $counter = eff(
       .on(increment(), (state) => state + 1)
       .on(decrement(), (state) => state - 1)
       .on(pullCounterFx().doneData, (_, value) => value)
-      .reset(reset()),
-  () => [pullCounterFx]
+      .reset(reset())
 );
 
 const app = new Koa();
@@ -76,25 +72,27 @@ const router = new Router();
 const redis = new Redis();
 
 app.use(async (_, next) => {
-  await diInit(async () => {
-    diSet('login', 'xxx');
+  await effectorAsyncLocalStorageInit(async () => {
     await next();
   });
 });
 
 router.post('/increment', async (ctx) => {
+  $counter();
   await pullCounterFx()();
   increment()();
   ctx.body = await pushCounterFx()();
 });
 
 router.post('/decrement', async (ctx) => {
+  $counter();
   await pullCounterFx()();
   decrement()();
   ctx.body = await pushCounterFx()();
 });
 
 router.post('/reset', async (ctx) => {
+  $counter();
   await pullCounterFx()();
   reset()();
   ctx.body = await pushCounterFx()();
