@@ -1,6 +1,6 @@
 {
   "name": "effector-async-local-storage",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Effector Domain based on AsyncLocalStorage",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
