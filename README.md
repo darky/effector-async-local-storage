@@ -105,4 +105,6 @@ app.listen(4000);
 
 ## Related
 
+* [effector-storify](https://github.com/darky/effector-storify) - Effector utils for storify Effect/Event
+
 * [ts-fp-di](https://github.com/darky/ts-fp-di) - Tiny TypeScript functional dependency injection, based on Node.js AsyncLocalStorage
